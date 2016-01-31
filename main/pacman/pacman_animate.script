@@ -1,0 +1,31 @@
+local gop = require "utils.gop"
+local current_anim
+function init(self)
+	self.globals = gop.get_properties() 
+end
+
+local function set_anim(self, anim)
+	if current_anim ~= anim then
+		current_anim = anim
+		msg.post("#sprite", "play_animation", {id = hash(anim)})
+	end
+	if anim == "death" then
+		go.set_rotation(vmath.quat_rotation_z(0))
+	elseif anim == "walk" then
+		local rotation = 0
+		if self.globals.direction.x == -1 then 
+			rotation = math.pi
+		elseif self.globals.direction.y == 1 then
+			rotation = math.pi*0.5
+		elseif self.globals.direction.y == -1 then
+			rotation = math.pi*1.5
+		end
+		go.set_rotation(vmath.quat_rotation_z(rotation))
+	end
+end
+
+function on_message(self, message_id, message, sender)
+    if message_id == hash("anim") then
+    	set_anim(self, message.anim)
+    end
+end

@@ -2,19 +2,30 @@
 title = My project
 version = 0.1
 
+[render]
+clear_color_red = 0.2
+clear_color_green = 0.2
+clear_color_blue = 0.2
+
 [bootstrap]
 main_collection = /main/main.collectionc
+render = /render/pacman.renderc
 
 [input]
 game_binding = /input/game.input_bindingc
 
 [display]
-width = 1280
-height = 720
+width = 480
+height = 800
+fullscreen = 0
 
 [physics]
 scale = 0.02
 
 [script]
 shared_state = 1
+
+[graphics]
+default_texture_min_filter = nearest
+default_texture_mag_filter = nearest
 

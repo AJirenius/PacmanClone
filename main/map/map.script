@@ -1,0 +1,7 @@
+local map = require "main.map.map"
+local game_state = require "main.game_state"
+function init(self)
+	math.randomseed(os.time())
+	map.create_map()
+	game_state.set_state(game_state.STATE_GAME_PLAY)
+end

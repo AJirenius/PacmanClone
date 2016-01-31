@@ -1,0 +1,46 @@
+go.property("speed", 50)
+local map = require "main.map.map"
+local game_state = require "main.game_state"
+
+local gop = require "utils.gop"
+
+function init(self)
+    self.globals = gop.get_properties() 
+    self.globals.direction = nil -- vmath.vector3(0,0,0)
+    msg.post(".","snap")
+    msg.post(".","start_walking")
+end
+
+local function snap_to_tile(self)
+	local pos = go.get_position()
+	pos.x = pos.x + 4
+	pos.y = pos.y + 4
+	local grid_pos = map.get_grid_pos(pos)
+    local snapped_pos = map.get_screen_pos(grid_pos)
+    go.set_position(snapped_pos)
+    self.globals.grid_pos = grid_pos
+end
+
+function update(self, dt)
+	if game_state.get_state() ~= game_state.STATE_GAME_PLAY or self.globals.direction == nil then return end
+	local pos = go.get_position()
+    local tile_before = map.get_grid_pos(pos)
+   
+    pos.x = pos.x + self.globals.direction.x*dt*self.speed
+    pos.y = pos.y + self.globals.direction.y*dt*self.speed
+    go.set_position(pos)
+    local tile_after = map.get_grid_pos(pos)
+    
+    if tile_before.x ~= tile_after.x or tile_before.y ~= tile_after.y then
+   		-- did pass a grid. Determine grid coords
+   		local grid_pos = tile_after
+   		if self.globals.direction.x < 0 or self.globals.direction.y < 0 then grid_pos = tile_before end
+   		self.globals.grid_pos = grid_pos	
+   		msg.post(".",hash("passed_grid"), { grid_pos = grid_pos }) 
+   	end   
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("snap") then snap_to_tile(self) end
+end
+

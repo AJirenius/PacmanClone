@@ -1,0 +1,49 @@
+local gop = require "utils.gop"
+local map = require "main.map.map"
+local next_direction
+
+local checklist = { 
+	vmath.vector3(-1, 0, 0),
+	vmath.vector3(0, 1, 0),
+	vmath.vector3(1, 0, 0),
+	vmath.vector3(0, -1, 0),
+}
+
+function init(self)
+	self.globals = gop.get_properties() 
+end
+
+-- returns all possible directions excluding the opposite of where he was going
+local function get_possible_directions(self)
+	local possible = {}
+	for i,v in ipairs(checklist) do
+		if map.is_valid_path(self.globals.grid_pos+v) == true then	
+			if self.globals.direction ~= nil then
+				local diff = v+self.globals.direction
+				if diff ~= vmath.vector3(0,0,0) then
+					table.insert( possible, v )
+				end
+			else
+				table.insert( possible, v )
+			end
+		end
+	end
+	return possible
+end
+
+function on_message(self, message_id, message, sender)
+
+   if message_id == hash("passed_grid") then
+   		local dirs = get_possible_directions(self)
+   		local new_dir = dirs[math.random(#dirs)]
+   		if self.globals.direction ~= new_dir then
+   			self.globals.direction = new_dir
+   			msg.post(".", "anim")
+   			msg.post(".","snap")
+   		end 
+   		
+   elseif message_id == hash("start_walking") then
+   		local dirs = get_possible_directions(self)
+   		self.globals.direction = dirs[math.random(#dirs)]
+   end
+end

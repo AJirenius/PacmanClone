@@ -1,0 +1,36 @@
+local game_state = require "main.game_state"
+
+
+function init(self)
+    -- Add initialization code here
+    -- Remove this function if not needed
+end
+
+function final(self)
+    -- Add finalization code here
+    -- Remove this function if not needed
+end
+
+function update(self, dt)
+    -- Add update code here
+    -- Remove this function if not needed
+end
+
+function on_message(self, message_id, message, sender)
+    if message_id == hash("collision_response") then
+    	if game_state.get_state() == game_state.STATE_GAME_PLAY then 
+    		msg.post(".", "anim", { anim = "death" })
+    		game_state.set_state(game_state.STATE_GAME_OVER)
+    	end
+    end
+end
+
+function on_input(self, action_id, action)
+    -- Add input-handling code here
+    -- Remove this function if not needed
+end
+
+function on_reload(self)
+    -- Add reload-handling code here
+    -- Remove this function if not needed
+end

@@ -1,0 +1,8 @@
+local gop = require "utils.gop"
+local map = require "main.map.map"
+
+function on_message(self, message_id, message, sender)
+    if message_id == hash("passed_grid") then
+    	map.on_reached_tile(message.grid_pos)
+    end
+end

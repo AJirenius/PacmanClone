@@ -1,0 +1,102 @@
+local gop = require "utils.gop"
+local map = require "main.map.map"
+local next_direction
+local game_state = require "main.game_state"
+
+
+function init(self)
+	self.globals = gop.get_properties() 
+    msg.post(".", "acquire_input_focus")
+end
+
+local function test_direction(self)
+	local dir = self.globals.direction
+		if dir and next_direction and next_direction.x == dir.x and next_direction.y == dir.y then
+			-- same direction as before. Do nothing 
+			next_direction = nil
+		else
+			-- valid new input
+			if dir == nil then
+				if map.is_valid_path(self.globals.grid_pos+next_direction) then
+					-- going from still standing
+					self.globals.direction = next_direction
+					next_direction = nil
+					msg.post(".","anim",{ anim = "walk" })
+				end
+			elseif math.abs(next_direction.x)+math.abs(dir.x) == 2 or math.abs(next_direction.y)+math.abs(dir.y) == 2 then
+				-- opposite direction. Should work immediately.
+				self.globals.direction = next_direction
+				next_direction = nil
+				msg.post(".","anim",{ anim = "walk" })
+			end
+		end
+end
+
+
+function on_input(self, action_id, action)
+	if game_state.get_state() ~= game_state.STATE_GAME_PLAY or action_id == nil then return end
+	
+	
+	if action_id == hash("touch") and action.pressed == true then
+		local w = 480
+		local h = 800
+		local hori = (action.x/(w/2))-1
+		local vert = (action.y/(h/2))-1
+		if math.abs(hori) > math.abs(vert) then
+			if hori < 0 then 
+				next_direction = vmath.vector3(-1,0,0)
+				print("LEFT")
+			else
+				next_direction = vmath.vector3(1,0,0)
+				print("RIGHT")
+			end
+		else
+			if vert < 0 then 
+				next_direction = vmath.vector3(0,-1,0)
+				print("DOWN")
+			else
+				next_direction = vmath.vector3(0,1,0)
+				print("UP")
+			end
+		end
+		--pprint(action_id)
+		pprint(action.x,action.y)
+		test_direction(self)
+	end
+	
+	if ( action_id == hash("left") or action_id == hash("right") or action_id == hash("up") or action_id == hash("down")) and action.pressed == true then
+		if action_id == hash("left") then
+			next_direction = vmath.vector3(-1,0,0)
+		elseif action_id == hash("right") then
+			next_direction = vmath.vector3(1,0,0)
+		elseif action_id == hash("up") then
+			next_direction = vmath.vector3(0,1,0)
+		elseif action_id == hash("down") then
+			next_direction = vmath.vector3(0,-1,0)
+		end
+		test_direction(self)
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("passed_grid") then
+		local p = message.grid_pos
+		if next_direction ~= nil then 
+			-- first try the new direction
+			if map.is_valid_path(p+next_direction) == true then 
+				self.globals.direction = next_direction
+				next_direction = nil
+				msg.post(".","anim",{ anim = "walk" })
+				msg.post(".","snap")
+				return
+			end
+		end
+	-- now try the same direction	
+	if map.is_valid_path(p+self.globals.direction) == false then 
+			-- could not in same direction
+			self.globals.direction = nil
+			next_direction = nil
+			msg.post(".","snap")
+		end 
+	end
+end

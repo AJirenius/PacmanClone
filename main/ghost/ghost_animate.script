@@ -1,0 +1,29 @@
+go.property("color",1)
+local gop = require "utils.gop"
+local cols = { "red", "pink", "blue", "orange" }
+
+local function anim(self)
+	local dir = self.globals.direction
+    	local dirstr = ""
+    	if dir == nil then dirstr = "left"
+    	elseif dir.x == 1 then dirstr = "right" 
+    	elseif dir.x == -1 then dirstr = "left" 
+    	elseif dir.y == 1 then dirstr = "up" 
+    	elseif dir.y == -1 then dirstr = "down"
+    	end 
+		msg.post("#sprite", "play_animation", {id = hash("ghost_"..dirstr.."_"..self.color_str)})
+end
+
+function init(self)
+	self.globals = gop.get_properties() 
+    self.color_str = cols[self.color]
+    anim(self)
+end
+
+
+
+function on_message(self, message_id, message, sender)
+    if message_id == hash("anim") then
+    	anim(self)
+    end
+end
