@@ -34,6 +34,21 @@ components {
   }
 }
 components {
+  id: "state"
+  component: "/main/ghost/ghost_state.script"
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+}
+components {
   id: "steering"
   component: "/main/ghost/ghost_steering.script"
   position {

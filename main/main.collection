@@ -3,8 +3,8 @@ instances {
   id: "ghost"
   prototype: "/main/ghost/ghost.go"
   position {
-    x: 142.6373
-    y: 116.71846
+    x: 86.32345
+    y: 267.98593
     z: 0.1
   }
   rotation {
@@ -23,8 +23,8 @@ instances {
   id: "ghost1"
   prototype: "/main/ghost/ghost.go"
   position {
-    x: 179.60179
-    y: 138.5011
+    x: 156.67044
+    y: 268.36212
     z: 0.1
   }
   rotation {
@@ -37,7 +37,7 @@ instances {
     id: "anim"
     properties {
       id: "color"
-      value: "4.0"
+      value: "2.0"
       type: PROPERTY_TYPE_NUMBER
     }
   }
@@ -51,8 +51,8 @@ instances {
   id: "ghost2"
   prototype: "/main/ghost/ghost.go"
   position {
-    x: 154.51874
-    y: 94.275734
+    x: 108.518486
+    y: 291.68573
     z: 0.1
   }
   rotation {
@@ -79,8 +79,8 @@ instances {
   id: "ghost3"
   prototype: "/main/ghost/ghost.go"
   position {
-    x: 108.31313
-    y: 115.72834
+    x: 131.84209
+    y: 292.43808
     z: 0.1
   }
   rotation {
@@ -93,7 +93,7 @@ instances {
     id: "anim"
     properties {
       id: "color"
-      value: "2.0"
+      value: "4.0"
       type: PROPERTY_TYPE_NUMBER
     }
   }
@@ -146,6 +146,41 @@ embedded_instances {
     x: -4.0
     y: -4.0
     z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "hud"
+  data: "components {\n"
+  "  id: \"gui\"\n"
+  "  component: \"/gui/hud.gui\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    x: 120.0
+    y: 196.0
+    z: 0.1
   }
   rotation {
     x: 0.0

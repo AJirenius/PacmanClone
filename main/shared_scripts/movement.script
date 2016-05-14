@@ -1,8 +1,11 @@
-go.property("speed", 50)
+go.property("speed", 75)
+go.property("grid_pos", vmath.vector3(0,0,0))
 local map = require "main.map.map"
 local game_state = require "main.game_state"
 
 local gop = require "utils.gop"
+
+
 
 function init(self)
     self.globals = gop.get_properties() 
@@ -19,6 +22,7 @@ local function snap_to_tile(self)
     local snapped_pos = map.get_screen_pos(grid_pos)
     go.set_position(snapped_pos)
     self.globals.grid_pos = grid_pos
+    self.grid_pos = grid_pos
 end
 
 function update(self, dt)
@@ -35,7 +39,8 @@ function update(self, dt)
    		-- did pass a grid. Determine grid coords
    		local grid_pos = tile_after
    		if self.globals.direction.x < 0 or self.globals.direction.y < 0 then grid_pos = tile_before end
-   		self.globals.grid_pos = grid_pos	
+   		self.globals.grid_pos = grid_pos
+   		self.grid_pos = grid_pos
    		msg.post(".",hash("passed_grid"), { grid_pos = grid_pos }) 
    	end   
 end

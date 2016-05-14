@@ -1,6 +1,9 @@
 local gop = require "utils.gop"
 local map = require "main.map.map"
 local next_direction
+local GHOST_SMARTNESS = 2
+local GHOST_SCARENESS = 4
+
 
 local checklist = { 
 	vmath.vector3(-1, 0, 0),
@@ -9,19 +12,47 @@ local checklist = {
 	vmath.vector3(0, -1, 0),
 }
 
+local function add_multiple_possibilities(tbl,v,amount)
+	for i = 1 , amount do
+		table.insert(tbl,v)
+	end
+end
+
 function init(self)
 	self.globals = gop.get_properties() 
 end
 
 -- returns all possible directions excluding the opposite of where he was going
 local function get_possible_directions(self)
+
+	-- first check where pacman is positioned compared to ghost
+	local pacman_pos = go.get("/pacman#movement", "grid_pos")
+	local ghost_pos = self.globals.grid_pos
+	local pac_diff = pacman_pos - ghost_pos
+	local state = go.get("#state","state")
+	-- now look for possible directions to go
 	local possible = {}
 	for i,v in ipairs(checklist) do
-		if map.is_valid_path(self.globals.grid_pos+v) == true then	
+		if map.is_valid_path(ghost_pos+v) == true then	
 			if self.globals.direction ~= nil then
 				local diff = v+self.globals.direction
 				if diff ~= vmath.vector3(0,0,0) then
 					table.insert( possible, v )
+					if state == 1 then
+						if (pac_diff.x > 1 and v.x == 1) or  (pac_diff.x < 1 and v.x == -1) then 
+							add_multiple_possibilities(possible,v,GHOST_SMARTNESS)
+						end
+						if (pac_diff.y > 1 and v.y == 1) or  (pac_diff.y < 1 and v.y == -1) then 
+							add_multiple_possibilities(possible,v,GHOST_SMARTNESS)
+						end
+					else
+						if (pac_diff.x < 1 and v.x == 1) or  (pac_diff.x > 1 and v.x == -1) then 
+							add_multiple_possibilities(possible,v,GHOST_SCARENESS)
+						end
+						if (pac_diff.y < 1 and v.y == 1) or  (pac_diff.y > 1 and v.y == -1) then 
+							add_multiple_possibilities(possible,v,GHOST_SCARENESS)
+						end
+					end
 				end
 			else
 				table.insert( possible, v )
@@ -34,6 +65,8 @@ end
 function on_message(self, message_id, message, sender)
 
    if message_id == hash("passed_grid") then
+   		if self.globals.grid_pos == self.last_grid_pos then return end
+   		self.last_grid_pos = self.globals.grid_pos
    		local dirs = get_possible_directions(self)
    		local new_dir = dirs[math.random(#dirs)]
    		if self.globals.direction ~= new_dir then

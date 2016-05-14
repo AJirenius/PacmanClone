@@ -3,15 +3,30 @@ local gop = require "utils.gop"
 local cols = { "red", "pink", "blue", "orange" }
 
 local function anim(self)
-	local dir = self.globals.direction
-    	local dirstr = ""
-    	if dir == nil then dirstr = "left"
-    	elseif dir.x == 1 then dirstr = "right" 
-    	elseif dir.x == -1 then dirstr = "left" 
-    	elseif dir.y == 1 then dirstr = "up" 
-    	elseif dir.y == -1 then dirstr = "down"
-    	end 
+	local state = go.get("#state", "state")
+	if state == 1 then
+		local dir = self.globals.direction
+		local dirstr = ""
+		if dir == nil then dirstr = "left"
+		elseif dir.x == 1 then dirstr = "right" 
+		elseif dir.x == -1 then dirstr = "left" 
+		elseif dir.y == 1 then dirstr = "up" 
+		elseif dir.y == -1 then dirstr = "down"
+		end 
 		msg.post("#sprite", "play_animation", {id = hash("ghost_"..dirstr.."_"..self.color_str)})
+	elseif state == 2 then
+		msg.post("#sprite", "play_animation", {id = hash("scared_ghost")})
+	elseif state == 3 then
+		local dir = self.globals.direction
+		local dirstr = ""
+		if dir == nil then dirstr = "left"
+		elseif dir.x == 1 then dirstr = "right" 
+		elseif dir.x == -1 then dirstr = "left" 
+		elseif dir.y == 1 then dirstr = "up" 
+		elseif dir.y == -1 then dirstr = "down"
+		end 
+		msg.post("#sprite", "play_animation", {id = hash("eyes_"..dirstr)})
+	end
 end
 
 function init(self)

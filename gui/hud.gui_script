@@ -1,0 +1,30 @@
+local update_score
+
+local function reset(self)
+	self.score = 0
+	self.highscore = sys.load("highscore")
+	if #self.highscore == 0 then self.highscore[1] = 0 end
+	update_score(self)
+end
+
+update_score = function(self)
+	gui.set_text(self.score_node, self.score)
+	gui.set_text(self.highscore_node, self.highscore[1])
+end
+
+function init(self)
+	self.score_node = gui.get_node("score")
+	self.highscore_node = gui.get_node("highscore")
+    reset(self)
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("add_score") then
+		self.score = self.score + message.add
+		if self.highscore[1] < self.score then
+			self.highscore[1] = self.score
+			sys.save("highscore", self.highscore)
+		end
+		update_score(self)
+	end
+end

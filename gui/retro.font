@@ -1,0 +1,4 @@
+font: "/gui/slkscr.ttf"
+material: "/builtins/fonts/font.material"
+size: 17
+antialias: 0

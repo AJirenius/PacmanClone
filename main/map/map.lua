@@ -1,3 +1,5 @@
+local ghost_controller = require "main.ghost.ghost_controller"
+
 local M = {}
 
 local TILE_SIZE = 8
@@ -114,8 +116,16 @@ function M.on_reached_tile(grid_pos)
 	local tile = grid[grid_pos.x][grid_pos.y]
 	if tile.dot == true then
 		tilemap.set_tile(url, "layer1", grid_pos.x, grid_pos.y, 8)
-	else
-	
+		tile.dot = false
+		msg.post("/hud","add_score", { add = 175 } )
+	elseif tile.powerup == true then
+		tilemap.set_tile(url, "layer1", grid_pos.x, grid_pos.y, 8)
+		tile.powerup = false
+		msg.post("/hud","add_score", { add = 500 } )
+		for i,ghost in ipairs(ghost_controller.ghosts) do
+			msg.post(ghost, "set_state", { state = 2 } )
+		end
+		
 	end
 end
 
